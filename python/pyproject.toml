@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=42", "cython", "cmake"]
+build-backend = "setuptools.build_meta"
+
+[tool.cibuildwheel]
+build = 'cp3{9,10}-manylinux_x86_64'
+manylinux-x86_64-image = 'manylinux_2_28'
+before-all = [
+  'dnf install -y epel-release',
+  'dnf module enable -y mariadb-devel',
+  'dnf install -y $(grep "^[^#]" dependencies.txt)',
+  'echo "need newer asio-devel version"',
+  'curl -OL https://download.sourceforge.net/asio/asio-1.21.0.tar.bz2',
+  'tar xf asio-1.21.0.tar.bz2',
+  'cd asio-1.21.0',
+  './configure',
+  'make',
+  'make install',
+]
+before-build = [
+    'pip install cython',  # Required for configure check
+    'cmake -DOPENDHT_PYTHON=ON .',
+    'cmake --build .',
+]
+
+# The way to point `auditwheel` to "libopendht.so.2" in the current dir
+linux.repair-wheel-command = 'LD_LIBRARY_PATH=$PWD auditwheel repair -w {dest_dir} {wheel}'
