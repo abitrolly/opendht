@@ -22,8 +22,6 @@
 #
 
 from setuptools import setup, Extension
-from Cython.Build import cythonize
-from Cython.Distutils import build_ext
 
 setup(name="opendht",
       version="@PACKAGE_VERSION@",
@@ -44,15 +42,16 @@ setup(name="opendht",
           'Programming Language :: Python :: 3.4',
           'Programming Language :: Python :: 3.5',
       ],
-      cmdclass = { 'build_ext' : build_ext },
-      ext_modules = cythonize(Extension(
-          "opendht",
-          ["@CURRENT_SOURCE_DIR@/opendht.pyx"],
-          include_dirs = ['@PROJECT_SOURCE_DIR@/include'],
-          language="c++",
-          extra_compile_args=["-std=c++17"],
-          extra_link_args=["-std=c++17"],
-          libraries=["opendht"],
-          library_dirs = ['@CURRENT_BINARY_DIR@', '@PROJECT_BINARY_DIR@']
-      ))
+      ext_modules = [
+          Extension(
+              "opendht",
+              ["@CURRENT_SOURCE_DIR@/opendht.pyx"],
+              include_dirs = ['@PROJECT_SOURCE_DIR@/include'],
+              language="c++",
+              extra_compile_args=["-std=c++17"],
+              extra_link_args=["-std=c++17"],
+              libraries=["opendht"],
+              library_dirs = ['@CURRENT_BINARY_DIR@', '@PROJECT_BINARY_DIR@']
+          ),
+      ]
 )
